@@ -236,6 +236,8 @@ class ProxyAdapter implements AdapterInterface
             'primary_key',
             'string',
             'text',
+            'mediumtext',
+            'longtext',
             'integer',
             'biginteger',
             'float',
