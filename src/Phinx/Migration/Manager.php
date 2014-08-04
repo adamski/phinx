@@ -127,7 +127,7 @@ class Manager
      * @param int $version
      * @return void
      */
-    public function migrate($environment, $version = null)
+    public function migrate($environment, $version = null, $from_version = null)
     {
         $migrations = $this->getMigrations();
         $env = $this->getEnvironment($environment);
@@ -149,6 +149,14 @@ class Manager
                 return;
             }
         }
+
+        if (null !== $from_version && 0 != $from_version && !isset($migrations[$from_version])) {
+            $output->writeln(sprintf(
+                '<comment>warning</comment> %s is not a valid version',
+                $from_version
+            ));
+            return;
+        }
         
         // are we migrating up or down?
         $direction = $version > $current ? MigrationInterface::UP : MigrationInterface::DOWN;
@@ -168,8 +176,14 @@ class Manager
         }
 
         ksort($migrations);
+
         foreach ($migrations as $migration) {
             if ($migration->getVersion() > $version) {
+                break;
+            }
+
+            // skip versions before $from_version
+            if ($migration->getVersion() < $from_version) {
                 break;
             }
 
