@@ -152,8 +152,6 @@ class Manager
             }
         }
 
-        $output->writeln(sprintf('from version: ', $from_version));
-
         if (null === $from_version) {
             $from_version = min(array_merge($versions, array_keys($migrations)));
         } else {
