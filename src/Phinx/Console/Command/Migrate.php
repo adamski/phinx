@@ -47,15 +47,17 @@ class Migrate extends AbstractCommand
 
         $this->setName('migrate')
              ->setDescription('Migrate the database')
-             ->addOption('--target', '-t', InputArgument::OPTIONAL, 'The version number to migrate to')
+             ->addOption('--target', '-t', InputArgument::OPTIONAL, 'The version number to migrate from')
              ->addOption('--from', '-f', InputArgument::OPTIONAL, 'The version number to migrate to')
              ->setHelp(
 <<<EOT
-The <info>migrate</info> command runs all available migrations, optionally up to a specific version
+The <info>migrate</info> command runs all available migrations, optionally up to a specific version, or from a specific version
 
 <info>phinx migrate -e development</info>
 <info>phinx migrate -e development -t 20110103081132</info>
 <info>phinx migrate -e development -v</info>
+<info>phinx migrate -e development -f 20140804110911</info>
+
 
 EOT
              );
@@ -84,7 +86,6 @@ EOT
         $envOptions = $this->getConfig()->getEnvironment($environment);
         $output->writeln('<info>using adapter</info> ' . $envOptions['adapter']);
         $output->writeln('<info>using database</info> ' . $envOptions['name']);
-        //$output->writeln('<info>migrating from version</info> ' . $from_version);
 
         // run the migrations
         $start = microtime(true);

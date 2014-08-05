@@ -192,10 +192,11 @@ class Manager
 
             // skip versions before $from_version
             if ($migration->getVersion() < $from_version) {
-                $output->writeln(sprintf(
-                    '<info>skipping version %s</info>',
-                    $migration->getVersion()
-                ));
+                $this->getOutput()->writeln(
+                    ' =='
+                    . ' <info>' . $migration->getVersion() . ' ' . $migration->getName() . ':</info>'
+                    . ' <comment> skipping </comment>'
+                );
                 continue;
             }
 
