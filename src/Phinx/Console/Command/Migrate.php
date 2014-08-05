@@ -48,6 +48,7 @@ class Migrate extends AbstractCommand
         $this->setName('migrate')
              ->setDescription('Migrate the database')
              ->addOption('--target', '-t', InputArgument::OPTIONAL, 'The version number to migrate to')
+             ->addOption('--from', '-f', InputArgument::OPTIONAL, 'The version number to migrate to')
              ->setHelp(
 <<<EOT
 The <info>migrate</info> command runs all available migrations, optionally up to a specific version
@@ -70,6 +71,7 @@ EOT
         $this->bootstrap($input, $output);
         
         $version = $input->getOption('target');
+        $from_version = $input->getOption('from');
         $environment = $input->getOption('environment');
         
         if (null === $environment) {
@@ -82,10 +84,11 @@ EOT
         $envOptions = $this->getConfig()->getEnvironment($environment);
         $output->writeln('<info>using adapter</info> ' . $envOptions['adapter']);
         $output->writeln('<info>using database</info> ' . $envOptions['name']);
+        //$output->writeln('<info>migrating from version</info> ' . $from_version);
 
         // run the migrations
         $start = microtime(true);
-        $this->getManager()->migrate($environment, $version);
+        $this->getManager()->migrate($environment, $version, $from_version);
         $this->getManager()->schemaDump($environment);
         $end = microtime(true);
         

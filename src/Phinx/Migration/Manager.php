@@ -129,6 +129,8 @@ class Manager
      */
     public function migrate($environment, $version = null, $from_version = null)
     {
+        $output = $this->getOutput();
+
         $migrations = $this->getMigrations();
         $env = $this->getEnvironment($environment);
         $versions = $env->getVersions();
@@ -150,12 +152,18 @@ class Manager
             }
         }
 
-        if (null !== $from_version && 0 != $from_version && !isset($migrations[$from_version])) {
-            $output->writeln(sprintf(
-                '<comment>warning</comment> %s is not a valid version',
-                $from_version
-            ));
-            return;
+        $output->writeln(sprintf('from version: ', $from_version));
+
+        if (null === $from_version) {
+            $from_version = min(array_merge($versions, array_keys($migrations)));
+        } else {
+            if (0 != $from_version && !isset($migrations[$from_version])) {
+                $output->writeln(sprintf(
+                    '<comment>warning</comment> %s is not a valid version',
+                    $from_version
+                ));
+                return;
+            }
         }
         
         // are we migrating up or down?
@@ -184,7 +192,11 @@ class Manager
 
             // skip versions before $from_version
             if ($migration->getVersion() < $from_version) {
-                break;
+                $output->writeln(sprintf(
+                    '<info>skipping version %s</info>',
+                    $migration->getVersion()
+                ));
+                continue;
             }
 
             if (!in_array($migration->getVersion(), $versions)) {
