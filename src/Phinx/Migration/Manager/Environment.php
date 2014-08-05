@@ -83,7 +83,7 @@ class Environment
         $this->name = $name;
         $this->options = $options;
     }
-    
+
     /**
      * Executes the specified migration on this environment.
      *
@@ -131,7 +131,25 @@ class Environment
         // Record it in the database
         $this->getAdapter()->migrated($migration, $direction, date('Y-m-d H:i:s', $startTime), date('Y-m-d H:i:s', time()));
     }
-    
+
+    /**
+     * Only records the specified migration on this environment.
+     * Used for 'skipped' migrations with --from switch
+     *
+     * @param MigrationInterface $migration Migration
+     * @param string $direction Direction
+     * @return void
+     */
+    public function skipMigration(MigrationInterface $migration, $direction = MigrationInterface::UP)
+    {
+        
+        $direction = ($direction == MigrationInterface::UP) ? MigrationInterface::UP : MigrationInterface::DOWN;
+        $migration->setAdapter($this->getAdapter());        
+
+        // Record it in the database
+        $this->getAdapter()->migrated($migration, $direction, null, null);
+    }
+
     /**
      * Sets the environment's name.
      *

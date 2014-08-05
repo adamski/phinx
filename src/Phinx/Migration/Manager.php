@@ -189,12 +189,11 @@ class Manager
             }
 
             // skip versions before $from_version
-            if ($migration->getVersion() < $from_version) {
-                $this->getOutput()->writeln(
-                    ' =='
-                    . ' <info>' . $migration->getVersion() . ' ' . $migration->getName() . ':</info>'
-                    . ' <comment> skipping </comment>'
-                );
+            if ($migration->getVersion() < $from_version ) {
+                
+
+                // Record it as migrated in the database
+                $this->skipMigration($environment, $migration, MigrationInterface::UP);
                 continue;
             }
 
@@ -233,7 +232,30 @@ class Manager
             . ' ' . sprintf('%.4fs', $end - $start) . '</comment>'
         );
     }
-    
+ 
+    /**
+     * Skip & record a migration against the specified Environment.
+     *
+     * @param string $name Environment Name
+     * @param MigrationInterface $migration Migration
+     * @param string $direction Direction
+     * @return void
+     */
+    public function skipMigration($name, MigrationInterface $migration, $direction = MigrationInterface::UP)
+    {
+        $this->getOutput()->writeln(
+                    ' =='
+                    . ' <info>' . $migration->getVersion() . ' ' . $migration->getName() . ':</info>'
+                    . ' <comment> skipping </comment>'
+                );
+
+        // Execute the migration and log the time elapsed.
+        //$start = microtime(true);
+        $this->getEnvironment($name)->skipMigration($migration, $direction);
+        //$end = microtime(true);
+        
+    }
+
     /**
      * Rollback an environment to the specified version.
      *
